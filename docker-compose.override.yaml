@@ -1,0 +1,27 @@
+services:
+  openclaw-gateway:
+    # The final image will be tagged as openclaw:local for global use
+    image: openclaw:local
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM openclaw:local
+        USER root
+        RUN apt-get update && apt-get install -y software-properties-common && \
+            echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list && \
+            apt-get update && apt-get install -y -t bookworm-backports \
+            python3-pip \
+            python3-venv \
+            kicad \
+            && rm -rf /var/lib/apt/lists/*
+        RUN chmod -R 755 /app/extensions
+        USER node
+    env_file:
+      - .env
+
+  openclaw-cli:
+    # Ensure the gateway build finishes before cli starts to use the new image
+    depends_on:
+      - openclaw-gateway
+    env_file:
+      - .env
