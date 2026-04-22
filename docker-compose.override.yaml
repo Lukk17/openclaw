@@ -7,19 +7,53 @@ services:
       dockerfile_inline: |
         FROM openclaw:local
         USER root
-        RUN apt-get update && apt-get install -y software-properties-common && \
-            echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list && \
-            apt-get update && apt-get install -y -t bookworm-backports \
+        RUN apt-get update && apt-get install -y \
+            software-properties-common \
+            tor \
+            golang-go \
+            python3-dev \
+            libxml2-dev \
+            libxslt1-dev \
+            zlib1g-dev \
+            libffi-dev \
+            libssl-dev \
+            nmap \
+            masscan \
+            curl \
+            git \
+            build-essential \
+            libbz2-dev \
+            libreadline-dev \
+            libsqlite3-dev \
+            libncursesw5-dev \
+            xz-utils \
+            tk-dev \
+            libxmlsec1-dev \
+            liblzma-dev \
+            libpcap-dev \
+            && echo "deb http://deb.debian.org/debian bookworm-backports main" > /etc/apt/sources.list.d/backports.list \
+            && apt-get update && apt-get install -y -t bookworm-backports \
             python3-pip \
             python3-venv \
             kicad \
             && rm -rf /var/lib/apt/lists/*
+
+        ENV PYENV_ROOT="/opt/pyenv"
+        ENV PATH="/opt/pyenv/shims:/opt/pyenv/bin:$$PATH"
+        RUN rm -rf /opt/pyenv && \
+            curl https://pyenv.run | PYENV_ROOT=/opt/pyenv bash \
+            && pyenv install 3.11 \
+            && pyenv install 3.12 \
+            && pyenv global 3.11 \
+            && chmod -R 777 /opt/pyenv
+
         RUN chmod -R 755 /app/extensions
         USER node
     env_file:
       - .env
 
   openclaw-cli:
+    image: openclaw:local
     # Ensure the gateway build finishes before cli starts to use the new image
     depends_on:
       - openclaw-gateway
