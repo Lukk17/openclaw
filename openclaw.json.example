@@ -1,0 +1,194 @@
+{
+  "logging": {
+    "level": "debug",
+    "redactSensitive": "tools"
+  },
+  "auth": {
+    "profiles": {
+      "anthropic:default": {
+        "provider": "anthropic",
+        "mode": "token"
+      },
+      "minimax:default": {
+        "provider": "minimax",
+        "mode": "api_key"
+      }
+    }
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "minimax": {
+        "baseUrl": "https://api.minimax.io/anthropic",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "MiniMax-M2.7",
+            "name": "MiniMax M2.7",
+            "contextWindow": 204800,
+            "maxTokens": 8192
+          }
+        ]
+      },
+      "anthropic": {
+        "baseUrl": "https://api.anthropic.com",
+        "api": "anthropic-messages",
+        "models": [
+          {
+            "id": "claude-sonnet-3-5",
+            "name": "Claude 3.5 Sonnet",
+            "contextWindow": 200000,
+            "maxTokens": 8192
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "minimax/MiniMax-M2.7"
+      },
+      "models": {
+        "minimax/MiniMax-M2.7": {
+          "alias": "minimax2-7"
+        },
+        "anthropic/claude-sonnet-3-5": {
+          "alias": "claude-sonnet-3-5"
+        }
+      },
+      "workspace": "/home/node/.openclaw/workspace",
+      "compaction": {
+        "mode": "default",
+        "reserveTokensFloor": 8000,
+        "maxHistoryShare": 0.8
+      },
+      "thinkingDefault": "high",
+      "verboseDefault": "off",
+      "timeoutSeconds": 1200,
+      "heartbeat": {
+        "every": "12h",
+        "session": "discord:channel:<INSERT_DISCORD_HEARTBEAT_CHANNEL_ID>",
+        "target": "last",
+        "directPolicy": "block"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  },
+  "bindings": [
+    {
+      "agentId": "main",
+      "match": {
+        "channel": "discord",
+        "guildId": "<INSERT_DISCORD_GUILD_ID>"
+      }
+    }
+  ],
+  "messages": {
+    "ackReactionScope": "group-mentions",
+    "groupChat": {
+      "visibleReplies": "automatic"
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true,
+    "useAccessGroups": false,
+    "ownerDisplay": "raw",
+    "allowFrom": {
+      "discord": [
+        "user:<INSERT_DISCORD_OWNER_USER_ID>"
+      ],
+      "*": [
+        "user:<INSERT_DISCORD_OWNER_USER_ID>"
+      ]
+    },
+    "ownerAllowFrom": [
+      "discord:user:<INSERT_DISCORD_OWNER_USER_ID>"
+    ]
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "groups": {
+        "*": {
+          "requireMention": true
+        }
+      },
+      "groupAllowFrom": [],
+      "groupPolicy": "open",
+      "streaming": {
+        "mode": "partial"
+      }
+    },
+    "discord": {
+      "enabled": true,
+      "token": "${DISCORD_BOT_TOKEN}",
+      "groupPolicy": "open",
+      "textChunkLimit": 1999,
+      "streaming": {
+        "mode": "off",
+        "block": {
+          "enabled": true
+        }
+      },
+      "maxLinesPerMessage": 1000,
+      "guilds": {
+        "<INSERT_DISCORD_GUILD_ID>": {
+          "slug": "AscendAI",
+          "requireMention": false,
+          "channels": {
+            "1470798594163478632": { "enabled": true },
+            "1470798824791343317": { "enabled": true },
+            "1474571646596677672": { "enabled": true },
+            "1475145428713603103": { "enabled": true },
+            "1489711334802063552": { "enabled": true },
+            "1489910649189306368": { "enabled": true },
+            "1488852225160646656": { "enabled": true }
+          }
+        }
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "lan",
+    "controlUi": {
+      "dangerouslyAllowHostHeaderOriginFallback": true
+    },
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    },
+    "remote": {
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  },
+  "plugins": {
+    "allow": ["discord"],
+    "entries": {
+      "telegram": {
+        "enabled": true
+      },
+      "discord": {
+        "enabled": true
+      }
+    }
+  }
+}
