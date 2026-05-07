@@ -78,8 +78,14 @@ services:
       # startup-seeker
       PRODUCT_HUNT_API_KEY: ${PRODUCT_HUNT_API_KEY:-}
       CRUNCHBASE_API_KEY: ${CRUNCHBASE_API_KEY:-}
+      # ascend-web-scrapper (host-side service via host.docker.internal)
+      ASCEND_SCRAPPER_URL: ${ASCEND_SCRAPPER_URL:-}
     volumes:
       - ./my-skills:/home/node/.openclaw/workspace/skills:ro
+    extra_hosts:
+      # Make host.docker.internal resolvable on native Linux Docker Engine
+      # (Docker Desktop on Mac/Windows/WSL2 already maps this automatically; this is a no-op there).
+      - "host.docker.internal:host-gateway"
 
   openclaw-cli:
     image: openclaw:local
@@ -115,5 +121,11 @@ services:
       # startup-seeker
       PRODUCT_HUNT_API_KEY: ${PRODUCT_HUNT_API_KEY:-}
       CRUNCHBASE_API_KEY: ${CRUNCHBASE_API_KEY:-}
+      # ascend-web-scrapper (host-side service via host.docker.internal)
+      ASCEND_SCRAPPER_URL: ${ASCEND_SCRAPPER_URL:-}
     volumes:
       - ./my-skills:/home/node/.openclaw/workspace/skills:ro
+    extra_hosts:
+      # Make host.docker.internal resolvable on native Linux Docker Engine
+      # (Docker Desktop on Mac/Windows/WSL2 already maps this automatically; this is a no-op there).
+      - "host.docker.internal:host-gateway"
