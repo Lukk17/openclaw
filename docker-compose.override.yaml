@@ -82,10 +82,8 @@ services:
       ASCEND_SCRAPPER_URL: ${ASCEND_SCRAPPER_URL:-}
     volumes:
       - ./my-skills:/home/node/.openclaw/workspace/skills:ro
-    extra_hosts:
-      # Make host.docker.internal resolvable on native Linux Docker Engine
-      # (Docker Desktop on Mac/Windows/WSL2 already maps this automatically; this is a no-op there).
-      - "host.docker.internal:host-gateway"
+    # No extra_hosts here — openclaw-cli uses network_mode: service:openclaw-gateway,
+    # which forbids extra_hosts and inherits /etc/hosts (incl. host.docker.internal) from the gateway.
 
   openclaw-cli:
     image: openclaw:local
@@ -125,7 +123,5 @@ services:
       ASCEND_SCRAPPER_URL: ${ASCEND_SCRAPPER_URL:-}
     volumes:
       - ./my-skills:/home/node/.openclaw/workspace/skills:ro
-    extra_hosts:
-      # Make host.docker.internal resolvable on native Linux Docker Engine
-      # (Docker Desktop on Mac/Windows/WSL2 already maps this automatically; this is a no-op there).
-      - "host.docker.internal:host-gateway"
+    # extra_hosts cannot be set here: openclaw-cli uses network_mode: "service:openclaw-gateway"
+    # so it inherits the gateway's /etc/hosts (including host.docker.internal).
